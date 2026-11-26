@@ -3,25 +3,27 @@
 <style>
 :root{--navy:#13243a;--blue:#1769aa;--bg:#f3f6fa;--line:#dce3eb;--green:#16834a}*{box-sizing:border-box}body{margin:0;font:15px Arial,sans-serif;background:var(--bg);color:#1d2937}.app{max-width:1200px;margin:auto;padding:16px}.head{background:var(--navy);color:white;padding:18px 20px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.head h1{margin:0;font-size:25px}.head small{color:#c8d5e3}.tabs{display:flex;gap:8px;overflow:auto;margin:14px 0}.tabs button,.btn{border:0;border-radius:8px;padding:10px 14px;background:var(--blue);color:white;cursor:pointer;font-weight:600}.tabs button{background:#dfe8f1;color:#18334e;white-space:nowrap}.tabs button.active{background:var(--blue);color:#fff}.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:14px;box-shadow:0 2px 8px #12243a0a}.hidden{display:none!important}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:6px}label{font-size:13px;font-weight:700;color:#526174}input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5df;border-radius:7px;font:inherit;background:white}h2{font-size:19px;margin:0 0 14px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.stat{padding:15px;border-radius:10px;background:#eef5fb}.stat span{display:block;color:#607187;font-size:13px}.stat strong{display:block;font-size:22px;margin-top:7px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.btn.secondary{background:#52677d}.btn.green{background:var(--green)}.btn.red{background:#b73535}table{width:100%;border-collapse:collapse;margin-top:12px;min-width:620px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line)}th{background:#f3f6fa;color:#42536a;font-size:13px}.tablewrap{overflow:auto}.right{text-align:right}.muted{color:#718096;font-size:13px}.invoice-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.total{font-size:20px;font-weight:bold;text-align:right;margin-top:12px}.notice{background:#fff8df;padding:11px;border-radius:8px;color:#715b18;margin-top:12px;font-size:13px}.itemrow{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:8px;margin:8px 0;align-items:end}.itemrow button{padding:10px;border:0;border-radius:7px;background:#fce8e8;color:#a22}.search-control{display:flex;gap:6px;align-items:stretch}.search-control input{flex:1;min-width:0}.search-btn{border:0;border-radius:7px;padding:9px 12px;background:var(--blue);color:#fff;font-weight:600;cursor:pointer;white-space:nowrap}.item-search{display:flex;gap:6px}.item-search input{flex:1;min-width:0}.foot{text-align:center;color:#718096;font-size:12px;padding:12px}
 
-/* Login & Modal Styles */
+/* Login, Forgot Password & Modal Styles */
 .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(135deg,#13243a,#1e3b5c)}
-.auth-box{background:#fff;width:100%;max-width:390px;padding:28px 24px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.auth-box{background:#fff;width:100%;max-width:400px;padding:28px 24px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
 .auth-box h1{margin:0 0 4px;font-size:24px;color:var(--navy);text-align:center}
 .auth-box p{margin:0 0 20px;color:#607187;font-size:13px;text-align:center}
 .auth-box .field{margin-bottom:14px}
 .auth-err{color:#b73535;background:#fce8e8;padding:9px 11px;border-radius:7px;font-size:13px;margin-bottom:12px;text-align:center}
+.auth-ok{color:#16834a;background:#e6f7ed;padding:9px 11px;border-radius:7px;font-size:13px;margin-bottom:12px;text-align:center}
+.link-btn{background:none;border:0;color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;padding:0}
 .head-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .user-badge{background:rgba(255,255,255,.12);padding:6px 10px;border-radius:7px;font-size:12px;color:#e2ecf7}
 .btn.sm{padding:7px 11px;font-size:12px}
 .modal-bg{position:fixed;inset:0;background:rgba(19,36,58,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:999}
-.modal-card{background:#fff;width:100%;max-width:400px;padding:22px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,.2)}
+.modal-card{background:#fff;width:100%;max-width:410px;padding:22px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,.2);max-height:92vh;overflow:auto}
 
 @media(max-width:600px){.app{padding:9px}.panel{padding:13px}.head h1{font-size:21px}.itemrow{grid-template-columns:1fr 1fr}.itemrow .wide{grid-column:span 2}.itemrow button{grid-column:span 2}}
 @media print{
 @page{size:8.27in 11.69in;margin:8mm}
 html,body{width:194mm;margin:0!important;padding:0!important;background:#fff!important;color:#111!important}
 body{font-family:Arial,sans-serif;font-size:10.5pt}
-#loginScreen,.modal-bg{display:none!important}
+#loginScreen,#forgotModal,#passModal{display:none!important}
 .app>*:not(#printArea){display:none!important}
 #printArea{display:block!important;width:194mm!important;margin:0!important;padding:0!important}
 .print-invoice{display:block!important;width:100%!important;margin:0!important;padding:1in 0 0!important;color:#111;}
@@ -49,6 +51,7 @@ body{font-family:Arial,sans-serif;font-size:10.5pt}
     <h1>AA Electronics</h1>
     <p>Invoice & Stock Management Login</p>
     <div id="loginError" class="auth-err hidden"></div>
+    <div id="loginSuccess" class="auth-ok hidden"></div>
     <div class="field">
       <label>User ID</label>
       <input id="loginId" autocomplete="username" placeholder="Enter User ID" required>
@@ -57,12 +60,44 @@ body{font-family:Arial,sans-serif;font-size:10.5pt}
       <label>Password</label>
       <input id="loginPass" type="password" autocomplete="current-password" placeholder="Enter Password" required>
     </div>
+    <div style="text-align:right;margin:-6px 0 14px">
+      <button type="button" class="link-btn" id="openForgotBtn">Forgot ID / Password?</button>
+    </div>
     <button type="submit" class="btn" style="width:100%;padding:11px;font-size:15px">Login</button>
     <div class="muted" style="text-align:center;margin-top:14px">Default ID: <b>admin</b> | Password: <b>1234</b></div>
   </form>
 </div>
 
-<!-- CHANGE ID / PASSWORD MODAL -->
+<!-- FORGOT PASSWORD / RESET MODAL -->
+<div id="forgotModal" class="modal-bg hidden">
+  <div class="modal-card">
+    <h2>Reset ID & Password</h2>
+    <p class="muted" style="margin-top:-8px">Verify with your Shop Phone Number or Recovery Code to set a new ID & Password.</p>
+    <div id="forgotErr" class="auth-err hidden"></div>
+    <div class="field" style="margin-bottom:10px">
+      <label>Shop Phone / Recovery Code</label>
+      <input id="verifyRecovery" placeholder="Enter Shop Phone (01864482848) or Recovery Code">
+    </div>
+    <div class="field" style="margin-bottom:10px">
+      <label>New User ID</label>
+      <input id="resetUserId" placeholder="Enter new User ID">
+    </div>
+    <div class="field" style="margin-bottom:10px">
+      <label>New Password</label>
+      <input id="resetNewPass" type="password" placeholder="Enter new password (min 4 chars)">
+    </div>
+    <div class="field" style="margin-bottom:14px">
+      <label>Confirm New Password</label>
+      <input id="resetConfirmPass" type="password" placeholder="Re-enter new password">
+    </div>
+    <div class="actions" style="justify-content:flex-end;margin-top:0">
+      <button type="button" class="btn secondary" id="closeForgotModal">Cancel</button>
+      <button type="button" class="btn green" id="saveResetCreds">Reset & Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE ID / PASSWORD MODAL (AFTER LOGIN) -->
 <div id="passModal" class="modal-bg hidden">
   <div class="modal-card">
     <h2>Change User ID & Password</h2>
@@ -83,13 +118,17 @@ body{font-family:Arial,sans-serif;font-size:10.5pt}
       <label>New Password</label>
       <input id="newPass" type="password" placeholder="Enter new password (min 4 chars)">
     </div>
-    <div class="field" style="margin-bottom:14px">
+    <div class="field" style="margin-bottom:10px">
       <label>Confirm New Password</label>
       <input id="confirmPass" type="password" placeholder="Re-enter new password">
     </div>
+    <div class="field" style="margin-bottom:14px">
+      <label>Security Recovery Code / Phone (for Forgot Password)</label>
+      <input id="recoveryCodeInput" placeholder="e.g. 01864482848 or secret code">
+    </div>
     <div class="actions" style="justify-content:flex-end;margin-top:0">
       <button type="button" class="btn secondary" id="closePassModal">Cancel</button>
-      <button type="button" class="btn green" id="saveNewCreds">Update ID & Password</button>
+      <button type="button" class="btn green" id="saveNewCreds">Update Settings</button>
     </div>
   </div>
 </div>
@@ -120,15 +159,19 @@ body{font-family:Arial,sans-serif;font-size:10.5pt}
 <script>
 const $=id=>document.getElementById(id);
 
-// --- AUTHENTICATION (ID & PASSWORD + CHANGE OPTION) ---
+// --- AUTHENTICATION (LOGIN + CHANGE + FORGOT PASSWORD) ---
 const AUTH_KEY='aa_electronics_auth_v1';
 const SESSION_KEY='aa_electronics_logged_in';
+const DEFAULT_RECOVERY='01864482848';
+
 function getCreds(){
   try{
     const saved=JSON.parse(localStorage.getItem(AUTH_KEY)||'null');
-    if(saved && saved.id && saved.pass) return saved;
+    if(saved && saved.id && saved.pass){
+      return {id:saved.id, pass:saved.pass, recovery:saved.recovery || DEFAULT_RECOVERY};
+    }
   }catch(_){}
-  return {id:'admin',pass:'1234'};
+  return {id:'admin', pass:'1234', recovery:DEFAULT_RECOVERY};
 }
 function syncUserLabel(){
   $('activeUserLabel').textContent=getCreds().id;
@@ -144,8 +187,10 @@ function checkAuth(){
     $('loginPass').value='';
   }
 }
+
 $('loginForm').onsubmit=e=>{
   e.preventDefault();
+  $('loginSuccess').classList.add('hidden');
   const uid=$('loginId').value.trim(), pwd=$('loginPass').value, creds=getCreds();
   if(uid===creds.id && pwd===creds.pass){
     sessionStorage.setItem(SESSION_KEY,'1');
@@ -156,16 +201,63 @@ $('loginForm').onsubmit=e=>{
     $('loginError').classList.remove('hidden');
   }
 };
+
 $('logoutBtn').onclick=()=>{
   sessionStorage.removeItem(SESSION_KEY);
+  $('loginSuccess').classList.add('hidden');
   checkAuth();
 };
+
+// Forgot Password Handlers
+$('openForgotBtn').onclick=()=>{
+  $('verifyRecovery').value='';
+  $('resetUserId').value=getCreds().id;
+  $('resetNewPass').value='';
+  $('resetConfirmPass').value='';
+  $('forgotErr').classList.add('hidden');
+  $('forgotModal').classList.remove('hidden');
+};
+$('closeForgotModal').onclick=()=>$('forgotModal').classList.add('hidden');
+$('saveResetCreds').onclick=()=>{
+  const creds=getCreds();
+  const code=$('verifyRecovery').value.trim();
+  const newId=$('resetUserId').value.trim();
+  const newP=$('resetNewPass').value;
+  const confP=$('resetConfirmPass').value;
+  if(!code || (code!==creds.recovery && code!==DEFAULT_RECOVERY)){
+    $('forgotErr').textContent='Invalid Shop Phone or Recovery Code!';
+    return $('forgotErr').classList.remove('hidden');
+  }
+  if(!newId){
+    $('forgotErr').textContent='New User ID cannot be empty.';
+    return $('forgotErr').classList.remove('hidden');
+  }
+  if(newP.length<4){
+    $('forgotErr').textContent='New password must be at least 4 characters.';
+    return $('forgotErr').classList.remove('hidden');
+  }
+  if(newP!==confP){
+    $('forgotErr').textContent='New password and confirm password do not match.';
+    return $('forgotErr').classList.remove('hidden');
+  }
+  localStorage.setItem(AUTH_KEY,JSON.stringify({id:newId, pass:newP, recovery:creds.recovery}));
+  $('forgotModal').classList.add('hidden');
+  $('loginId').value=newId;
+  $('loginPass').value='';
+  $('loginError').classList.add('hidden');
+  $('loginSuccess').textContent='ID & Password reset successfully! Please login now.';
+  $('loginSuccess').classList.remove('hidden');
+};
+
+// Change ID / Password Handlers (Inside App)
 $('openPassModal').onclick=()=>{
+  const creds=getCreds();
   $('currentUserId').value='';
   $('oldPass').value='';
-  $('newUserId').value=getCreds().id;
+  $('newUserId').value=creds.id;
   $('newPass').value='';
   $('confirmPass').value='';
+  $('recoveryCodeInput').value=creds.recovery;
   $('passErr').classList.add('hidden');
   $('passModal').classList.remove('hidden');
 };
@@ -177,6 +269,7 @@ $('saveNewCreds').onclick=()=>{
   const newId=$('newUserId').value.trim();
   const newP=$('newPass').value;
   const confP=$('confirmPass').value;
+  const recCode=$('recoveryCodeInput').value.trim() || DEFAULT_RECOVERY;
   if(curId!==creds.id){
     $('passErr').textContent='Current User ID is incorrect.';
     return $('passErr').classList.remove('hidden');
@@ -197,10 +290,10 @@ $('saveNewCreds').onclick=()=>{
     $('passErr').textContent='New password and confirm password do not match.';
     return $('passErr').classList.remove('hidden');
   }
-  localStorage.setItem(AUTH_KEY,JSON.stringify({id:newId,pass:newP}));
+  localStorage.setItem(AUTH_KEY,JSON.stringify({id:newId, pass:newP, recovery:recCode}));
   syncUserLabel();
   $('passModal').classList.add('hidden');
-  alert('User ID and Password updated successfully!');
+  alert('User ID, Password & Recovery Code updated successfully!');
 };
 checkAuth();
 
