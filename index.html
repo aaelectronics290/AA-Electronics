@@ -1,1 +1,941 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <title>AA Electronics | Login</title> <style> :root { --navy: #13243a; --blue: #1769aa; --bg: #f3f6fa; --line: #dce3eb; --green: #16834a; --red: #b73535; } * { box-sizing: border-box; } body { margin: 0; font: 15px Arial, sans-serif; background: var(--bg); color: #1d2937; } #authGate { position: fixed; inset: 0; background: var(--navy); display: flex; align-items: center; justify-content: center; z-index: 99999; padding: 16px; } .login-box { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 24px; width: 100%; max-width: 350px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3); } .login-box h2 { margin: 0 0 6px; color: var(--navy); } .muted { color: #718096; font-size: 13px; } .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; } label { font-size: 13px; font-weight: 700; color: #526174; } input { width: 100%; padding: 10px; border: 1px solid #cbd5df; border-radius: 7px; font: inherit; } .btn { border: 0; border-radius: 8px; padding: 10px 14px; background: var(--blue); color: #fff; cursor: pointer; font-weight: 600; width: 100%; } .login-error { color: var(--red); font-size: 13px; margin-top: 10px; display: none; } .app { max-width: 1200px; margin: auto; padding: 16px; } .head { background: var(--navy); color: #fff; padding: 18px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; } .head h1 { margin: 0; font-size: 24px; } .head small { color: #c8d5e3; } .logout-btn { width: auto; background: #52677d; padding: 8px 14px; } .panel { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin-top: 14px; } </style> </head> <body> <div id="authGate"> <div class="login-box"> <h2>AA Electronics</h2> <p class="muted" style="margin:0 0 16px">Username এবং Password দিয়ে লগইন করুন</p> <div class="field"> <label for="authUser">Username</label> <input id="authUser" type="text" placeholder="AA" autocomplete="username" /> </div> <div class="field" style="margin-bottom:16px"> <label for="authPass">Password</label> <input id="authPass" type="password" placeholder="Password" autocomplete="current-password" /> </div> <button id="loginBtn" type="button" class="btn">Login</button> <div id="authMsg" class="login-error">ভুল Username বা Password!</div> </div> </div> <div id="mainApp" class="app" style="display:none"> <header class="head"> <div> <h1>AA Electronics</h1> <small>Invoice &amp; Stock Management System</small> </div> <button id="logoutBtn" type="button" class="btn logout-btn">Logout</button> </header> <div class="panel"> <h2>লগইন সফল হয়েছে</h2> <p class="muted">আপনার মূল Invoice &amp; Stock ড্যাশবোর্ড এখানে যুক্ত করা যাবে।</p> </div> </div> <script> (function () { const VALID_USER = "AA"; const VALID_PASS = "Farid@1234"; const gate = document.getElementById("authGate"); const app = document.getElementById("mainApp"); const userEl = document.getElementById("authUser"); const passEl = document.getElementById("authPass"); const msgEl = document.getElementById("authMsg"); const loginBtn = document.getElementById("loginBtn"); const logoutBtn = document.getElementById("logoutBtn"); function showApp() { gate.style.display = "none"; app.style.display = "block"; msgEl.style.display = "none"; } function showGate() { app.style.display = "none"; gate.style.display = "flex"; userEl.value = ""; passEl.value = ""; msgEl.style.display = "none"; } function handleLogin() { const u = (userEl.value || "").trim(); const p = passEl.value || ""; if (u === VALID_USER && p === VALID_PASS) { try { sessionStorage.setItem("aa_auth", "1"); } catch (e) {} showApp(); } else { msgEl.style.display = "block"; } } loginBtn.addEventListener("click", handleLogin); passEl.addEventListener("keydown", function (e) { if (e.key === "Enter") handleLogin(); }); logoutBtn.addEventListener("click", function () { try { sessionStorage.removeItem("aa_auth"); } catch (e) {} showGate(); }); try { if (sessionStorage.getItem("aa_auth") === "1") { showApp(); } } catch (e) {} })(); </script> </body> </html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AA Electronics | Invoice &amp; Stock</title>
+  <style>
+    :root {
+      --navy: #13243a;
+      --blue: #1769aa;
+      --bg: #f3f6fa;
+      --line: #dce3eb;
+      --green: #16834a;
+      --red: #b73535;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 15px Arial, sans-serif;
+      background: var(--bg);
+      color: #1d2937;
+    }
+    .app {
+      max-width: 1200px;
+      margin: auto;
+      padding: 16px;
+    }
+    .head {
+      background: var(--navy);
+      color: #fff;
+      padding: 18px 20px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .head h1 { margin: 0; font-size: 25px; }
+    .head small { color: #c8d5e3; }
+    .head-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow: auto;
+      margin: 14px 0;
+    }
+    .tabs button, .btn {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      background: var(--blue);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .tabs button {
+      background: #dfe8f1;
+      color: #18334e;
+      white-space: nowrap;
+    }
+    .tabs button.active {
+      background: var(--blue);
+      color: #fff;
+    }
+    .panel {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 8px #12243a0a;
+    }
+    .hidden { display: none !important; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #526174;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5df;
+      border-radius: 7px;
+      font: inherit;
+      background: #fff;
+    }
+    h2 { font-size: 19px; margin: 0 0 14px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      padding: 15px;
+      border-radius: 10px;
+      background: #eef5fb;
+    }
+    .stat span { display: block; color: #607187; font-size: 13px; }
+    .stat strong { display: block; font-size: 22px; margin-top: 7px; }
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    .btn.secondary { background: #52677d; }
+    .btn.green { background: var(--green); }
+    .btn.red { background: var(--red); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      min-width: 620px;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    th {
+      background: #f3f6fa;
+      color: #42536a;
+      font-size: 13px;
+    }
+    .tablewrap { overflow: auto; }
+    .right { text-align: right; }
+    .muted { color: #718096; font-size: 13px; }
+    .total {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: right;
+      margin-top: 12px;
+    }
+    .notice {
+      background: #fff8df;
+      padding: 11px;
+      border-radius: 8px;
+      color: #715b18;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+    .itemrow {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 8px;
+      margin: 8px 0;
+      align-items: end;
+    }
+    .itemrow button {
+      padding: 10px;
+      border: 0;
+      border-radius: 7px;
+      background: #fce8e8;
+      color: #a22;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .foot {
+      text-align: center;
+      color: #718096;
+      font-size: 12px;
+      padding: 12px;
+    }
+
+    /* Login Gate Overlay */
+    #authGate {
+      position: fixed;
+      inset: 0;
+      background: var(--navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      padding: 16px;
+    }
+    .login-box {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 24px;
+      width: 100%;
+      max-width: 350px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    }
+    .login-box h2 { margin: 0 0 6px; color: var(--navy); }
+    .login-error {
+      color: var(--red);
+      font-size: 13px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .app { padding: 9px; }
+      .panel { padding: 13px; }
+      .head h1 { font-size: 21px; }
+      .itemrow { grid-template-columns: 1fr 1fr; }
+      .itemrow .wide { grid-column: span 2; }
+      .itemrow button { grid-column: span 2; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Screen Start -->
+  <div id="authGate">
+    <div class="login-box">
+      <h2>AA Electronics</h2>
+      <p class="muted" style="margin:0 0 16px">Username এবং Password দিয়ে লগইন করুন</p>
+      <div class="field" style="margin-bottom:12px">
+        <label for="authUser">Username</label>
+        <input id="authUser" type="text" placeholder="Enter username" autocomplete="username" />
+      </div>
+      <div class="field" style="margin-bottom:16px">
+        <label for="authPass">Password</label>
+        <input id="authPass" type="password" placeholder="Enter password" autocomplete="current-password" />
+      </div>
+      <button id="loginBtn" type="button" class="btn" style="width:100%">Login</button>
+      <div id="authMsg" class="login-error">ভুল Username বা Password দিয়েছেন। আবার চেষ্টা করুন।</div>
+    </div>
+  </div>
+  <!-- Login Screen End -->
+
+  <div id="mainApp" class="app" style="display:none">
+    <header class="head">
+      <div>
+        <h1>AA Electronics</h1>
+        <small>Invoice &amp; Stock Management System</small>
+      </div>
+      <div class="head-right">
+        <small id="today"></small>
+        <button id="logoutBtn" type="button" class="btn secondary" style="padding:6px 12px;font-size:13px">Logout</button>
+      </div>
+    </header>
+
+    <nav class="tabs" id="tabs">
+      <button class="active" data-tab="dashboard">Dashboard</button>
+      <button data-tab="customers">Customer List</button>
+      <button data-tab="products">Products / Stock</button>
+      <button data-tab="invoice">New Invoice</button>
+      <button data-tab="duePayments">Due Collection</button>
+      <button data-tab="purchases">Purchase Entry</button>
+      <button data-tab="records">Sales Records</button>
+      <button data-tab="reports">Reports</button>
+      <button data-tab="backup">Backup</button>
+    </nav>
+
+    <!-- Dashboard -->
+    <section id="dashboard" class="page">
+      <div class="panel">
+        <h2>Business Overview</h2>
+        <div class="stats">
+          <div class="stat"><span>Products</span><strong id="sProducts">0</strong></div>
+          <div class="stat"><span>Stock Units</span><strong id="sUnits">0</strong></div>
+          <div class="stat"><span>Today's Sales</span><strong id="sToday">BDT 0.00</strong></div>
+          <div class="stat"><span>Total Sales</span><strong id="sSales">BDT 0.00</strong></div>
+          <div class="stat"><span>Outstanding Customer Due</span><strong id="sDue">BDT 0.00</strong></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Low Stock Alert</h2>
+        <div id="lowStock" class="muted">No low-stock products.</div>
+      </div>
+    </section>
+
+    <!-- Customers -->
+    <section id="customers" class="page hidden">
+      <div class="panel">
+        <h2>Add / Update Customer</h2>
+        <div class="grid">
+          <div class="field"><label>Customer Name</label><input id="custName" placeholder="Customer name" /></div>
+          <div class="field"><label>Phone Number</label><input id="custPhone" placeholder="Phone number" /></div>
+          <div class="field"><label>Address</label><input id="custAddress" placeholder="Customer address" /></div>
+          <div class="field"><label>Note</label><input id="custNote" placeholder="Optional note" /></div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="saveCustomer">Save Customer</button>
+          <button class="btn secondary" id="clearCustomer">Clear</button>
+        </div>
+        <input type="hidden" id="custEdit" />
+      </div>
+      <div class="panel">
+        <h2>Customer List</h2>
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr><th>Customer Name</th><th>Phone</th><th>Address</th><th>Note</th><th>Action</th></tr>
+            </thead>
+            <tbody id="customerRows"><tr><td colspan="5">No customers found.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Products -->
+    <section id="products" class="page hidden">
+      <div class="panel">
+        <h2>Add / Update Product</h2>
+        <div class="grid">
+          <div class="field"><label>Product Name</label><input id="pName" placeholder="e.g. LED Bulb 12W" /></div>
+          <div class="field"><label>SKU / Code</label><input id="pSku" placeholder="Optional code" /></div>
+          <div class="field"><label>Purchase Price (BDT)</label><input id="pCost" type="number" min="0" step="0.01" /></div>
+          <div class="field"><label>Sale Price (BDT)</label><input id="pPrice" type="number" min="0" step="0.01" /></div>
+          <div class="field"><label>Stock / Quantity</label><input id="pQty" type="number" min="0" step="1" value="0" /></div>
+          <div class="field"><label>Low Stock Alert At</label><input id="pMin" type="number" min="0" value="0" /></div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="saveProduct">Save Product</button>
+          <button class="btn secondary" id="clearProduct">Clear</button>
+        </div>
+        <input type="hidden" id="pEdit" />
+      </div>
+      <div class="panel">
+        <h2>Product List</h2>
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr><th>Product</th><th>SKU</th><th>Purchase</th><th>Sale</th><th>Stock</th><th>Action</th></tr>
+            </thead>
+            <tbody id="productRows"><tr><td colspan="6">No products found.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- New Invoice -->
+    <section id="invoice" class="page hidden">
+      <div class="panel">
+        <h2>Create Sales Invoice</h2>
+        <div class="grid">
+          <div class="field"><label>Invoice Number</label><input id="invNo" readonly /></div>
+          <div class="field"><label>Date</label><input id="invDate" type="date" /></div>
+          <div class="field"><label>Customer Name</label><input id="customer" placeholder="Customer name" /></div>
+          <div class="field"><label>Phone</label><input id="phone" placeholder="Phone number" /></div>
+        </div>
+
+        <h2 style="margin-top:20px">Invoice Items</h2>
+        <datalist id="productOptions"></datalist>
+        <div id="invoiceItems"></div>
+        <div class="actions"><button class="btn secondary" id="addItem">+ Add Item</button></div>
+
+        <div class="grid" style="margin-top:15px">
+          <div class="field"><label>Discount (BDT)</label><input id="discount" type="number" min="0" value="0" /></div>
+          <div class="field"><label>Paid Amount (BDT)</label><input id="paid" type="number" min="0" value="0" /></div>
+        </div>
+
+        <div class="total" id="invoiceTotal">Total: BDT 0.00</div>
+        <div class="muted right" id="dueText">Due: BDT 0.00</div>
+        <div class="actions"><button class="btn green" id="saveInvoice">Save Invoice</button></div>
+        <div class="notice">Data is stored locally in this browser. Use Backup to save or move data across devices.</div>
+      </div>
+    </section>
+
+    <!-- Due Collection -->
+    <section id="duePayments" class="page hidden">
+      <div class="panel">
+        <h2>Customer Due Payment Entry</h2>
+        <div class="grid">
+          <div class="field"><label>Select Customer</label><select id="dueCustomer"><option value="">Select customer</option></select></div>
+          <div class="field"><label>Select Invoice</label><select id="dueInvoice" disabled><option value="">Select invoice</option></select></div>
+          <div class="field"><label>Invoice Due Balance</label><input id="dueBalance" readonly value="BDT 0.00" /></div>
+          <div class="field"><label>Payment Amount (BDT)</label><input id="dueAmount" type="number" min="0.01" step="0.01" placeholder="Enter amount" /></div>
+          <div class="field"><label>Payment Date</label><input id="dueDate" type="date" /></div>
+          <div class="field"><label>Payment Method</label><select id="dueMethod"><option>Cash</option><option>Bank</option><option>bKash</option><option>Nagad</option></select></div>
+        </div>
+        <div class="actions">
+          <button class="btn green" id="saveDuePayment">Save Payment</button>
+          <button class="btn secondary" id="clearDuePayment">Clear</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Due Payment History</h2>
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr><th>Receipt</th><th>Date</th><th>Customer</th><th>Invoice</th><th>Method</th><th>Amount</th></tr>
+            </thead>
+            <tbody id="paymentRows"><tr><td colspan="6">No due payments recorded.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Purchases -->
+    <section id="purchases" class="page hidden">
+      <div class="panel">
+        <h2>Purchase Entry / Add Stock</h2>
+        <div class="grid">
+          <div class="field"><label>Existing Product</label><select id="buyProduct"><option value="">Select product</option></select></div>
+          <div class="field"><label>New Product Name</label><input id="buyNewName" placeholder="Or type new product" /></div>
+          <div class="field"><label>Quantity</label><input id="buyQty" type="number" min="1" value="1" /></div>
+          <div class="field"><label>Unit Purchase Cost (BDT)</label><input id="buyCost" type="number" min="0" step="0.01" /></div>
+          <div class="field"><label>Sale Price / MRP (BDT)</label><input id="buyMrp" type="number" min="0" step="0.01" /></div>
+          <div class="field"><label>Supplier</label><input id="supplier" placeholder="Supplier name" /></div>
+        </div>
+        <div class="actions"><button class="btn" id="savePurchase">Save Purchase</button></div>
+      </div>
+      <div class="panel">
+        <h2>Purchase History</h2>
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr><th>Date</th><th>Product</th><th>Qty</th><th>Unit Cost</th><th>Supplier</th><th>Total</th></tr>
+            </thead>
+            <tbody id="purchaseRows"><tr><td colspan="6">No purchases recorded.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sales Records -->
+    <section id="records" class="page hidden">
+      <div class="panel">
+        <h2>Sales Records</h2>
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Total</th><th>Paid</th><th>Due</th></tr>
+            </thead>
+            <tbody id="salesRows"><tr><td colspan="6">No sales recorded.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reports -->
+    <section id="reports" class="page hidden">
+      <div class="panel">
+        <h2>Sales &amp; Profit Summary</h2>
+        <div class="stats">
+          <div class="stat"><span>Total Sales</span><strong id="rSales">BDT 0.00</strong></div>
+          <div class="stat"><span>Estimated Cost</span><strong id="rCost">BDT 0.00</strong></div>
+          <div class="stat"><span>Gross Profit</span><strong id="rProfit">BDT 0.00</strong></div>
+          <div class="stat"><span>Customer Due</span><strong id="rDue">BDT 0.00</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Backup -->
+    <section id="backup" class="page hidden">
+      <div class="panel">
+        <h2>Backup &amp; Restore</h2>
+        <p>Download a JSON backup file or restore from a previous backup.</p>
+        <div class="actions">
+          <button class="btn green" id="exportData">Download Backup</button>
+          <label class="btn secondary" for="importFile" style="cursor:pointer">Import Backup</label>
+          <input id="importFile" type="file" accept="application/json" style="display:none" />
+        </div>
+      </div>
+    </section>
+
+    <div class="foot">AA Electronics · Local browser-based management software</div>
+  </div>
+
+  <script>
+    (function () {
+      const VALID_USER = 'AA';
+      const VALID_PASS = 'Farid@1234';
+      const SESSION_KEY = 'aa_electronics_auth_v1';
+
+      const gate = document.getElementById('authGate');
+      const mainApp = document.getElementById('mainApp');
+      const userEl = document.getElementById('authUser');
+      const passEl = document.getElementById('authPass');
+      const msgEl = document.getElementById('authMsg');
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+
+      function showApp() {
+        gate.style.display = 'none';
+        mainApp.style.display = 'block';
+        msgEl.style.display = 'none';
+      }
+
+      function showGate() {
+        mainApp.style.display = 'none';
+        gate.style.display = 'flex';
+        userEl.value = '';
+        passEl.value = '';
+        msgEl.style.display = 'none';
+      }
+
+      function handleLogin() {
+        const u = (userEl.value || '').trim();
+        const p = passEl.value || '';
+        if (u === VALID_USER && p === VALID_PASS) {
+          try { sessionStorage.setItem(SESSION_KEY, '1'); } catch (e) {}
+          showApp();
+        } else {
+          msgEl.style.display = 'block';
+        }
+      }
+
+      loginBtn.addEventListener('click', handleLogin);
+      passEl.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') handleLogin();
+      });
+      logoutBtn.addEventListener('click', function () {
+        try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+        showGate();
+      });
+
+      try {
+        if (sessionStorage.getItem(SESSION_KEY) === '1') {
+          showApp();
+        }
+      } catch (e) {}
+    })();
+
+    // App Logic
+    const STORAGE_KEY = 'aa_electronics_db_v1';
+    let db = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    db.products = db.products || [];
+    db.sales = db.sales || [];
+    db.purchases = db.purchases || [];
+    db.customers = db.customers || [];
+    db.payments = db.payments || [];
+
+    const $ = (id) => document.getElementById(id);
+    const money = (n) => 'BDT ' + Number(n || 0).toFixed(2);
+    const today = () => new Date().toISOString().slice(0, 10);
+    const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    $('today').textContent = new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
+    $('dueDate').value = today();
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+      render();
+    }
+
+    document.querySelectorAll('.tabs button').forEach((btn) => {
+      btn.onclick = () => {
+        document.querySelectorAll('.tabs button').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.page').forEach((p) => p.classList.add('hidden'));
+        $(btn.dataset.tab).classList.remove('hidden');
+        if (btn.dataset.tab === 'invoice') newInvoice();
+        if (btn.dataset.tab === 'duePayments') refreshDueCustomers();
+      };
+    });
+
+    // Customers
+    function clearCustomer() {
+      $('custName').value = '';
+      $('custPhone').value = '';
+      $('custAddress').value = '';
+      $('custNote').value = '';
+      $('custEdit').value = '';
+    }
+    $('clearCustomer').onclick = clearCustomer;
+    $('saveCustomer').onclick = () => {
+      const name = $('custName').value.trim();
+      if (!name) return alert('Customer name দিন।');
+      const obj = {
+        id: $('custEdit').value || uid(),
+        name,
+        phone: $('custPhone').value.trim(),
+        address: $('custAddress').value.trim(),
+        note: $('custNote').value.trim()
+      };
+      const idx = db.customers.findIndex((c) => c.id === obj.id);
+      if (idx >= 0) db.customers[idx] = obj;
+      else db.customers.push(obj);
+      clearCustomer();
+      save();
+    };
+    window.editCustomer = (id) => {
+      const c = db.customers.find((x) => x.id === id);
+      if (!c) return;
+      $('custEdit').value = c.id;
+      $('custName').value = c.name;
+      $('custPhone').value = c.phone || '';
+      $('custAddress').value = c.address || '';
+      $('custNote').value = c.note || '';
+      document.querySelector('[data-tab="customers"]').click();
+    };
+    window.deleteCustomer = (id) => {
+      if (confirm('এই কাস্টমারটি ডিলিট করতে চান?')) {
+        db.customers = db.customers.filter((x) => x.id !== id);
+        save();
+      }
+    };
+
+    // Products
+    function clearProduct() {
+      $('pName').value = '';
+      $('pSku').value = '';
+      $('pCost').value = '';
+      $('pPrice').value = '';
+      $('pQty').value = 0;
+      $('pMin').value = 0;
+      $('pEdit').value = '';
+    }
+    $('clearProduct').onclick = clearProduct;
+    $('saveProduct').onclick = () => {
+      const name = $('pName').value.trim();
+      if (!name) return alert('Product name দিন।');
+      const obj = {
+        id: $('pEdit').value || uid(),
+        name,
+        sku: $('pSku').value.trim(),
+        cost: +$('pCost').value || 0,
+        price: +$('pPrice').value || 0,
+        qty: +$('pQty').value || 0,
+        min: +$('pMin').value || 0
+      };
+      const idx = db.products.findIndex((p) => p.id === obj.id);
+      if (idx >= 0) db.products[idx] = obj;
+      else db.products.push(obj);
+      clearProduct();
+      save();
+    };
+    window.editProduct = (id) => {
+      const p = db.products.find((x) => x.id === id);
+      if (!p) return;
+      $('pEdit').value = p.id;
+      $('pName').value = p.name;
+      $('pSku').value = p.sku || '';
+      $('pCost').value = p.cost || 0;
+      $('pPrice').value = p.price || 0;
+      $('pQty').value = p.qty || 0;
+      $('pMin').value = p.min || 0;
+      document.querySelector('[data-tab="products"]').click();
+    };
+    window.delProduct = (id) => {
+      if (confirm('এই প্রোডাক্টটি ডিলিট করতে চান?')) {
+        db.products = db.products.filter((x) => x.id !== id);
+        save();
+      }
+    };
+
+    // Invoice
+    function newInvoice() {
+      $('invNo').value = 'AA-' + today().replaceAll('-', '') + '-' + String(db.sales.length + 1).padStart(3, '0');
+      $('invDate').value = today();
+      $('customer').value = '';
+      $('phone').value = '';
+      $('discount').value = 0;
+      $('paid').value = 0;
+      $('invoiceItems').innerHTML = '';
+      addItem();
+      calcInvoice();
+    }
+
+    function addItem() {
+      const row = document.createElement('div');
+      row.className = 'itemrow';
+      row.innerHTML = `
+        <div class="field wide">
+          <label>Item / Product</label>
+          <input class="itProduct" list="productOptions" placeholder="Type product name" />
+        </div>
+        <div class="field">
+          <label>Qty</label>
+          <input class="itQty" type="number" min="1" value="1" />
+        </div>
+        <div class="field">
+          <label>Unit Price</label>
+          <input class="itPrice" type="number" min="0" step="0.01" value="0" />
+        </div>
+        <button type="button">Remove</button>
+      `;
+      const prodInput = row.querySelector('.itProduct');
+      prodInput.addEventListener('input', () => {
+        const found = db.products.find((p) => p.name.toLowerCase() === prodInput.value.trim().toLowerCase());
+        if (found) row.querySelector('.itPrice').value = found.price || 0;
+        calcInvoice();
+      });
+      row.querySelectorAll('.itQty, .itPrice').forEach((inp) => (inp.oninput = calcInvoice));
+      row.querySelector('button').onclick = () => {
+        row.remove();
+        calcInvoice();
+      };
+      $('invoiceItems').appendChild(row);
+      calcInvoice();
+    }
+
+    $('addItem').onclick = addItem;
+    $('discount').oninput = calcInvoice;
+    $('paid').oninput = calcInvoice;
+
+    function calcInvoice() {
+      let subtotal = 0;
+      document.querySelectorAll('#invoiceItems .itemrow').forEach((r) => {
+        const q = +r.querySelector('.itQty').value || 0;
+        const p = +r.querySelector('.itPrice').value || 0;
+        subtotal += q * p;
+      });
+      const disc = +$('discount').value || 0;
+      const total = Math.max(0, subtotal - disc);
+      const paid = +$('paid').value || 0;
+      const due = Math.max(0, total - paid);
+      $('invoiceTotal').textContent = 'Total: ' + money(total);
+      $('dueText').textContent = 'Due: ' + money(due);
+      return { subtotal, disc, total, paid, due };
+    }
+
+    $('saveInvoice').onclick = () => {
+      const items = [];
+      let estCost = 0;
+      document.querySelectorAll('#invoiceItems .itemrow').forEach((r) => {
+        const name = r.querySelector('.itProduct').value.trim();
+        const qty = +r.querySelector('.itQty').value || 0;
+        const price = +r.querySelector('.itPrice').value || 0;
+        if (name && qty > 0) {
+          const prod = db.products.find((p) => p.name.toLowerCase() === name.toLowerCase());
+          if (prod) {
+            prod.qty = Math.max(0, (prod.qty || 0) - qty);
+            estCost += qty * (prod.cost || 0);
+          }
+          items.push({ name, qty, price });
+        }
+      });
+      if (!items.length) return alert('অন্তত একটি প্রোডাক্ট যুক্ত করুন।');
+      const { total, paid, due } = calcInvoice();
+      const sale = {
+        id: uid(),
+        no: $('invNo').value,
+        date: $('invDate').value || today(),
+        customer: $('customer').value.trim() || 'Walk-in Customer',
+        phone: $('phone').value.trim(),
+        items,
+        total,
+        paid,
+        due,
+        estCost
+      };
+      db.sales.unshift(sale);
+      save();
+      alert('Invoice সংরক্ষিত হয়েছে।');
+      newInvoice();
+    };
+
+    // Due Collection
+    function customerKey(s) {
+      const ph = (s.phone || '').trim();
+      return ph ? 'ph:' + ph : 'nm:' + (s.customer || 'Walk-in Customer').trim().toLowerCase();
+    }
+
+    function refreshDueCustomers() {
+      const keys = [...new Set(db.sales.filter((s) => (s.due || 0) > 0).map(customerKey))];
+      $('dueCustomer').innerHTML = '<option value="">Select customer</option>' + keys.map((k) => {
+        const s = db.sales.find((x) => customerKey(x) === k && (x.due || 0) > 0);
+        return `<option value="${esc(k)}">${esc(s?.customer || 'Customer')}${s?.phone ? ' — ' + esc(s.phone) : ''}</option>`;
+      }).join('');
+      refreshDueInvoices();
+    }
+
+    function refreshDueInvoices() {
+      const k = $('dueCustomer').value;
+      const rows = db.sales.filter((s) => customerKey(s) === k && (s.due || 0) > 0);
+      $('dueInvoice').innerHTML = '<option value="">Select invoice</option>' + rows.map((s) => (
+        `<option value="${esc(s.id)}">${esc(s.no)} | Due ${money(s.due)}</option>`
+      )).join('');
+      $('dueInvoice').disabled = !rows.length;
+      updateDuePreview();
+    }
+
+    function updateDuePreview() {
+      const s = db.sales.find((x) => x.id === $('dueInvoice').value);
+      const due = Number(s?.due || 0);
+      const amt = Number($('dueAmount').value || 0);
+      $('dueBalance').value = money(due);
+      $('dueRemaining').value = money(Math.max(0, due - amt));
+    }
+
+    $('dueCustomer').onchange = refreshDueInvoices;
+    $('dueInvoice').onchange = updateDuePreview;
+    $('dueAmount').oninput = updateDuePreview;
+    $('clearDuePayment').onclick = () => {
+      $('dueCustomer').value = '';
+      $('dueInvoice').value = '';
+      $('dueAmount').value = '';
+      $('dueDate').value = today();
+      refreshDueInvoices();
+    };
+
+    $('saveDuePayment').onclick = () => {
+      const sale = db.sales.find((x) => x.id === $('dueInvoice').value);
+      const amt = +$('dueAmount').value || 0;
+      const dt = $('dueDate').value || today();
+      if (!sale) return alert('Customer এবং Invoice সিলেক্ট করুন।');
+      if (amt <= 0 || amt > sale.due + 0.001) return alert('সঠিক Amount দিন।');
+      sale.due = Math.max(0, +(sale.due - amt).toFixed(2));
+      sale.paid = +(Number(sale.paid || 0) + amt).toFixed(2);
+      db.payments.unshift({
+        id: uid(),
+        receipt: 'DUE-' + dt.replaceAll('-', '') + '-' + String(db.payments.length + 1).padStart(3, '0'),
+        date: dt,
+        customer: sale.customer,
+        invoiceNo: sale.no,
+        method: $('dueMethod').value,
+        amount: amt
+      });
+      save();
+      alert('Due payment সংরক্ষিত হয়েছে।');
+      $('dueAmount').value = '';
+      refreshDueCustomers();
+    };
+
+    // Purchases
+    $('savePurchase').onclick = () => {
+      const selId = $('buyProduct').value;
+      const newName = $('buyNewName').value.trim();
+      const qty = +$('buyQty').value || 0;
+      const cost = +$('buyCost').value || 0;
+      const mrp = +$('buyMrp').value || 0;
+      const supplier = $('supplier').value.trim();
+      if (qty <= 0) return alert('Quantity দিন।');
+
+      let prod = db.products.find((p) => p.id === selId);
+      let prodName = prod ? prod.name : newName;
+      if (!prodName) return alert('Product সিলেক্ট করুন বা নতুন নাম দিন।');
+
+      if (prod) {
+        prod.qty = (prod.qty || 0) + qty;
+        if (cost > 0) prod.cost = cost;
+        if (mrp > 0) prod.price = mrp;
+      } else {
+        prod = { id: uid(), name: prodName, sku: '', cost, price: mrp, qty, min: 0 };
+        db.products.push(prod);
+      }
+
+      db.purchases.unshift({
+        id: uid(),
+        date: today(),
+        product: prodName,
+        qty,
+        cost,
+        supplier,
+        total: qty * cost
+      });
+
+      $('buyNewName').value = '';
+      $('buyQty').value = 1;
+      $('buyCost').value = '';
+      $('buyMrp').value = '';
+      $('supplier').value = '';
+      save();
+    };
+
+    // Backup & Restore
+    $('exportData').onclick = () => {
+      const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'aa-electronics-backup-' + today() + '.json';
+      a.click();
+    };
+
+    $('importFile').onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          db = {
+            products: parsed.products || [],
+            sales: parsed.sales || [],
+            purchases: parsed.purchases || [],
+            customers: parsed.customers || [],
+            payments: parsed.payments || []
+          };
+          save();
+          alert('Backup সফলভাবে Restore হয়েছে।');
+        } catch {
+          alert('সঠিক JSON backup ফাইল নির্বাচন করুন।');
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    function render() {
+      const totalSales = db.sales.reduce((a, b) => a + (b.total || 0), 0);
+      const todaySales = db.sales.filter((s) => s.date === today()).reduce((a, b) => a + (b.total || 0), 0);
+      const totalDue = db.sales.reduce((a, b) => a + (b.due || 0), 0);
+      const totalUnits = db.products.reduce((a, b) => a + (b.qty || 0), 0);
+      const estCost = db.sales.reduce((a, b) => a + (b.estCost || 0), 0);
+
+      $('sProducts').textContent = db.products.length;
+      $('sUnits').textContent = totalUnits;
+      $('sToday').textContent = money(todaySales);
+      $('sSales').textContent = money(totalSales);
+      $('sDue').textContent = money(totalDue);
+
+      $('rSales').textContent = money(totalSales);
+      $('rCost').textContent = money(estCost);
+      $('rProfit').textContent = money(totalSales - estCost);
+      $('rDue').textContent = money(totalDue);
+
+      const low = db.products.filter((p) => (p.min || 0) > 0 && (p.qty || 0) <= p.min);
+      $('lowStock').innerHTML = low.length
+        ? low.map((p) => `<div><strong>${esc(p.name)}</strong> — Stock: ${p.qty} (Alert at ${p.min})</div>`).join('')
+        : 'No low-stock products.';
+
+      $('customerRows').innerHTML = db.customers.length
+        ? db.customers.map((c) => `<tr><td>${esc(c.name)}</td><td>${esc(c.phone)}</td><td>${esc(c.address)}</td><td>${esc(c.note)}</td><td><button class="btn secondary" onclick="editCustomer('${c.id}')">Edit</button> <button class="btn red" onclick="deleteCustomer('${c.id}')">Delete</button></td></tr>`).join('')
+        : '<tr><td colspan="5">No customers found.</td></tr>';
+
+      $('productRows').innerHTML = db.products.length
+        ? db.products.map((p) => `<tr><td>${esc(p.name)}</td><td>${esc(p.sku)}</td><td>${money(p.cost)}</td><td>${money(p.price)}</td><td>${p.qty}</td><td><button class="btn secondary" onclick="editProduct('${p.id}')">Edit</button> <button class="btn red" onclick="delProduct('${p.id}')">Delete</button></td></tr>`).join('')
+        : '<tr><td colspan="6">No products found.</td></tr>';
+
+      $('productOptions').innerHTML = db.products.map((p) => `<option value="${esc(p.name)}"></option>`).join('');
+      $('buyProduct').innerHTML = '<option value="">Select product</option>' + db.products.map((p) => `<option value="${esc(p.id)}">${esc(p.name)} (Stock: ${p.qty})</option>`).join('');
+
+      $('salesRows').innerHTML = db.sales.length
+        ? db.sales.map((s) => `<tr><td>${esc(s.no)}</td><td>${esc(s.date)}</td><td>${esc(s.customer)}</td><td>${money(s.total)}</td><td>${money(s.paid)}</td><td>${money(s.due)}</td></tr>`).join('')
+        : '<tr><td colspan="6">No sales recorded.</td></tr>';
+
+      $('purchaseRows').innerHTML = db.purchases.length
+        ? db.purchases.map((p) => `<tr><td>${esc(p.date)}</td><td>${esc(p.product)}</td><td>${p.qty}</td><td>${money(p.cost)}</td><td>${esc(p.supplier)}</td><td>${money(p.total)}</td></tr>`).join('')
+        : '<tr><td colspan="6">No purchases recorded.</td></tr>';
+
+      $('paymentRows').innerHTML = db.payments.length
+        ? db.payments.map((x) => `<tr><td>${esc(x.receipt)}</td><td>${esc(x.date)}</td><td>${esc(x.customer)}</td><td>${esc(x.invoiceNo)}</td><td>${esc(x.method)}</td><td>${money(x.amount)}</td></tr>`).join('')
+        : '<tr><td colspan="6">No due payments recorded.</td></tr>';
+    }
+
+    render();
+  </script>
+</body>
+</html>
